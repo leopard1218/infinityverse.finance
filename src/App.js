@@ -39,8 +39,9 @@ function App() {
                     const web3Modal = new Web3Modal();
                     const connection = await web3Modal.connect();
                     const provider = new ethers.providers.Web3Provider(connection);
-                    const signer = provider.getSigner();
+                    // const signer = provider.getSigner();
                     // const myAddr = signer.provider.provider.selectedAddress;
+                    // alert("successfully connected!")
                 } else {
                     try {
                         await web3.currentProvider.request({
