@@ -67,7 +67,7 @@
             let seconds = timeLeft.getUTCSeconds();
             seconds = seconds <= 9 ? '0' + seconds : seconds;
 
-            timer.innerHTML = dayNum + ':' + hours + ':' + minutes + ':' + seconds;
+            // timer.innerHTML = dayNum + ':' + hours + ':' + minutes + ':' + seconds;
             if (distance > 0)
                 requestAnimationFrame(countdown);
             else {

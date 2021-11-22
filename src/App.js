@@ -26,45 +26,56 @@ const style = {
 };
 
 function App() {
-
     const [open, setOpen] = useState(false);
     const [saleAmount, setSaleAmount] = useState(0)
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
 
-    useEffect(async () => {
+    useEffect(() => {
         const web3 = new Web3(Web3.givenProvider);
         async function initWallet() {
             try {
-                const chainId = await web3.eth.getChainId()
+                const chainId = await web3.eth.getChainId();
                 console.log(chainId)
                 if (chainId === 43114) {
                     const web3Modal = new Web3Modal();
                     const connection = await web3Modal.connect();
                     const provider = new ethers.providers.Web3Provider(connection);
                     const signer = provider.getSigner();
-                    const myAddr = signer.provider.provider.selectedAddress;
-                    console.log(myAddr)
+                    // const myAddr = signer.provider.provider.selectedAddress;
                 } else {
-                    // alert('The wrong network, please switch to the Mainnet network.')
                     try {
                         await web3.currentProvider.request({
                             method: "wallet_switchEthereumChain",
                             params: [{ chainId: "0xA86A" }]
                         });
                     } catch (error) {
-                        alert(error.message);
+                        if (error.code === 4902) {
+                            try {
+                                await web3.currentProvider.request({
+                                    method: "wallet_addEthereumChain",
+                                    params: [
+                                        {
+                                            chainId: "0xA86A",
+                                            chainName: "Avalanche Mainnet",
+                                            rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+                                            blockExplorerUrls: ["https://snowtrace.io"],
+                                        },
+                                    ],
+                                });
+                            } catch (error) {
+                                alert(error.message);
+                            }
+                        }
                     }
                 }
             } catch (err) {
-                console.log(err)
+                console.log(err);
+                alert("add metamask");
             }
         }
         initWallet();
     }, [])
     const saleVerse = async () => {
         const web3 = new Web3(Web3.givenProvider);
-        // let verseContract;
         let USDCContract;
         let saleContract;
         try {
@@ -74,7 +85,9 @@ function App() {
                 const connection = await web3Modal.connect();
                 const provider = new ethers.providers.Web3Provider(connection);
                 const signer = provider.getSigner();
-                const myAddr = signer.provider.provider.selectedAddress;
+                // const myAddr = signer.provider.provider.selectedAddress;
+                console.log(signer);
+                console.log(provider);
                 USDCContract = new ethers.Contract(
                     USDCAddr,
                     USDCCont.abi,
@@ -86,7 +99,6 @@ function App() {
                     signer
                 );
                 if (saleAmount > 0) {
-
                     const USDCCon = await USDCContract.approve(saleAddr, saleAmount * Math.pow(10, 6));
                     await USDCCon.wait();
                     const saleCon = await saleContract.buyVerseToken(saleAmount);
@@ -123,10 +135,10 @@ function App() {
                     </div>
                     <div className="social-icons">
                         <div className="icon">
-                            <a href="https://discord.gg/Rt4eheWp" target="_blank"><i className="fab fa-discord"></i></a>
+                            <a href="https://discord.gg/Rt4eheWp" rel="noreferrer" target="_blank"><i className="fab fa-discord"></i></a>
                         </div>
                         <div className="icon">
-                            <a href="https://t.me/versetokenpresale" target="_blank"><i className="fab fa-telegram"></i></a>
+                            <a href="https://t.me/versetokenpresale" rel="noreferrer" target="_blank"><i className="fab fa-telegram"></i></a>
                         </div>
                     </div>
                 </div>
@@ -175,13 +187,13 @@ function App() {
                     100% of the proceedings that will be gathered from the prelaunch event will be invested towards improving the project.
                 </div>
                 <div className="credit">
-                    Made by <a href="https://www.instagram.com/professor.dev/" target="_blank">Professor</a>
+                    Made by <a href="https://www.instagram.com/professor.dev/" rel="noreferrer" target="_blank">Professor</a>
                 </div>
             </div>
-            <Button onClick={handleOpen}>Open modal</Button>
+            <Button onClick={() => setOpen(true)}>Open modal</Button>
             <Modal
                 open={open}
-                onClose={handleClose}
+                onClose={() => setOpen(false)}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
